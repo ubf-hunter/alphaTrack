@@ -1,7 +1,7 @@
 // Client Supabase service_role pour les Edge Functions.
 // JAMAIS exposer cette clé côté navigateur.
 
-import { createClient, type SupabaseClient } from 'https://esm.sh/@supabase/supabase-js@2.47.0';
+import { createClient, type SupabaseClient } from 'npm:@supabase/supabase-js@2.47.0';
 
 export function adminClient(): SupabaseClient {
   const url = Deno.env.get('SUPABASE_URL');
