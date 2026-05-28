@@ -1,0 +1,8 @@
+packages:
+  - 'apps/*'
+  - 'packages/*'
+
+# pnpm v10+ — autoriser les scripts de build natifs pour les packages de confiance.
+# esbuild compile son binaire au moment de l'install (nécessaire à Vite/Vitest).
+onlyBuiltDependencies:
+  - esbuild

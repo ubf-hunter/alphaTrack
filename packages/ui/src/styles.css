@@ -1,0 +1,77 @@
+/*
+  Design tokens Alpha Center / alphaTrack — Tailwind CSS v4 @theme directive
+  Voir docs/plan UI/UX pour la justification de chaque token.
+*/
+
+@theme {
+  /* Ink — navy héritage Alpha Center, étendu */
+  --color-ink-50: #f3f4f9;
+  --color-ink-100: #dde1ee;
+  --color-ink-200: #b3bcd6;
+  --color-ink-300: #7d8cb5;
+  --color-ink-400: #4f6092;
+  --color-ink-500: #2b3f73;
+  --color-ink-600: #14275a;
+  --color-ink-700: #001a51;
+  --color-ink-800: #00102f;
+  --color-ink-900: #00081a;
+
+  /* Laurel — or académique */
+  --color-laurel-300: #ead49c;
+  --color-laurel-500: #c79a3a;
+  --color-laurel-700: #8a6418;
+
+  /* Terre cuite — accent culturel discret */
+  --color-terre-400: #c97b5c;
+  --color-terre-600: #8c4b30;
+
+  /* Papier — surfaces chaudes */
+  --color-paper-base: #fafaf7;
+  --color-paper-soft: #f3f1e9;
+  --color-paper-edge: #e2dfd2;
+
+  /* Sémantiques (sobres) */
+  --color-vert-foret: #1d6b4a;
+  --color-ambre-ble: #b88314;
+  --color-rouge-brique: #a5302a;
+
+  /* Typographie */
+  --font-display: 'Fraunces', 'Times New Roman', serif;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace;
+
+  /* Rayons */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-pill: 999px;
+
+  /* Ombres teintées navy */
+  --shadow-sm: 0 1px 2px rgb(0 26 81 / 0.06);
+  --shadow-md: 0 4px 12px rgb(0 26 81 / 0.08);
+  --shadow-lg: 0 12px 32px rgb(0 26 81 / 0.12);
+  --shadow-seal: inset 0 0 0 1px rgb(199 154 58 / 0.4);
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    font-feature-settings: 'ss01', 'cv11', 'tnum';
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: var(--color-paper-base);
+    color: var(--color-ink-800);
+  }
+
+  h1, h2, h3, .display {
+    font-family: var(--font-display);
+    font-feature-settings: 'ss01', 'cv11';
+  }
+
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+}
