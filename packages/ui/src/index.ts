@@ -18,5 +18,6 @@ export {
   LoadingRow,
 } from './components/Table';
 export { Switch, type SwitchProps } from './components/Switch';
+export { Select, type SelectProps, type SelectOption } from './components/Select';
 export { IconButton, type IconButtonProps } from './components/IconButton';
 export { Icon, type IconProps, type IconName } from './components/Icon';
