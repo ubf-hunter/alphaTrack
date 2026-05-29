@@ -1,5 +1,10 @@
 @import 'tailwindcss';
 @import '@alphatrack/ui/styles.css';
 
-/* Scan le package UI partagé pour ses classes Tailwind */
-@source "../../../packages/ui/src/**/*.{ts,tsx}";
+/*
+  Tailwind v4 — chemin RELATIF au fichier CSS courant.
+  Depuis apps/admin/src/styles/index.css il faut remonter 4 niveaux pour
+  atteindre la racine du monorepo, puis descendre dans packages/ui.
+*/
+@source "../../../../packages/ui/src/**/*.{ts,tsx}";
+@source "../../../../packages/shared/src/**/*.{ts,tsx}";
