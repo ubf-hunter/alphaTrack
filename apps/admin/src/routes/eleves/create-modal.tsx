@@ -90,6 +90,7 @@ export function CreateEleveModal({ open, onClose }: Props): JSX.Element {
 
   const sexeValue = watch('sexe');
   const concoursValue = watch('concours_id');
+  const sousCentreValue = watch('sous_centre_id');
 
   async function onSubmit(values: FormValues): Promise<void> {
     setServerError(null);
@@ -289,22 +290,23 @@ export function CreateEleveModal({ open, onClose }: Props): JSX.Element {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Field id="concours_id" label="Concours">
               <Select
-                {...register('concours_id')}
+                value={concoursValue ?? ''}
+                onChange={(e) => setValue('concours_id', e.target.value)}
                 options={concoursOptions}
-                placeholder="— Choisir —"
               />
             </Field>
             <Field id="sous_centre_id" label="Sous-centre">
               <Select
-                {...register('sous_centre_id')}
+                value={sousCentreValue ?? ''}
+                onChange={(e) => setValue('sous_centre_id', e.target.value)}
                 options={sousCentreOptions}
-                placeholder="— Choisir —"
-                disabled={!concoursValue}
               />
             </Field>
           </div>
           <p className="text-xs text-slate-500 mt-2">
-            Tu pourras ajouter d&apos;autres inscriptions (multi-concours) depuis l&apos;édition de la fiche.
+            Les deux champs doivent être remplis ensemble pour créer l&apos;inscription, ou
+            laissés vides pour ne pas inscrire l&apos;élève à un concours tout de suite. Tu
+            pourras ajouter d&apos;autres inscriptions (multi-concours) depuis l&apos;édition.
           </p>
         </div>
 

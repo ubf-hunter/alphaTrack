@@ -68,10 +68,10 @@ export function AdminLayout(): JSX.Element {
   const fullName = admin ? `${admin.matricule}` : '';
 
   return (
-    <div className="min-h-screen flex bg-surface-muted">
-      {/* Sidebar slate sombre avec coins arrondis */}
-      <aside className="w-[76px] shrink-0 m-3 mr-0">
-        <div className="h-[calc(100vh-1.5rem)] bg-slate-900 rounded-3xl flex flex-col items-center py-5 px-3 gap-2">
+    <div className="h-screen flex bg-surface-muted overflow-hidden">
+      {/* Sidebar slate sombre avec coins arrondis — fixe (le layout est h-screen) */}
+      <aside className="w-[76px] shrink-0 p-3 pr-0">
+        <div className="h-full bg-slate-900 rounded-3xl flex flex-col items-center py-5 px-3 gap-2">
           {/* Logo */}
           <div className="w-11 h-11 rounded-2xl bg-lime-400 flex items-center justify-center text-slate-900 font-bold text-xl mb-4 shadow-glow-lime">
             α
@@ -115,10 +115,10 @@ export function AdminLayout(): JSX.Element {
         </div>
       </aside>
 
-      {/* Zone principale */}
-      <div className="flex-1 flex flex-col min-w-0 p-3">
-        {/* Topbar */}
-        <header className="bg-surface-base rounded-2xl px-5 py-3 border border-surface-border flex items-center justify-between gap-4">
+      {/* Zone principale — header reste fixe, seul main scroll */}
+      <div className="flex-1 flex flex-col min-w-0 p-3 overflow-hidden">
+        {/* Topbar — fixe en haut (shrink-0 pour ne pas être compressée) */}
+        <header className="shrink-0 bg-surface-base rounded-2xl px-5 py-3 border border-surface-border flex items-center justify-between gap-4">
           {/* Search */}
           <div className="flex-1 max-w-md">
             <Input
