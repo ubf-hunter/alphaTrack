@@ -73,9 +73,11 @@ export function App(): JSX.Element {
 function PlaceholderRoute({ title }: { title: string }): JSX.Element {
   return (
     <div className="max-w-4xl">
-      <p className="text-xs uppercase tracking-[0.18em] text-ink-400 mb-2">{title}</p>
-      <h1 className="display text-3xl text-ink-800 mb-3">À venir</h1>
-      <p className="text-ink-500">
+      <p className="text-xs uppercase tracking-wider text-slate-400 mb-2 font-semibold">
+        {title}
+      </p>
+      <h1 className="text-3xl font-bold tracking-tight text-slate-900 mb-3">À venir</h1>
+      <p className="text-slate-500">
         Module en construction. Sera livré dans la prochaine itération de la Phase 1.
       </p>
     </div>
@@ -84,25 +86,25 @@ function PlaceholderRoute({ title }: { title: string }): JSX.Element {
 
 function ConfigError({ missing }: { missing: ReadonlyArray<string> }): JSX.Element {
   return (
-    <main className="min-h-screen flex items-center justify-center bg-paper-base p-6">
+    <main className="min-h-screen flex items-center justify-center bg-surface-muted p-6">
       <div className="max-w-lg w-full">
-        <p className="text-xs uppercase tracking-[0.2em] text-rouge-brique mb-2">
+        <p className="text-xs uppercase tracking-wider text-danger mb-2 font-semibold">
           Configuration manquante
         </p>
-        <h1 className="display text-3xl text-ink-800 mb-3">
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900 mb-3">
           Variables d&apos;environnement absentes
         </h1>
-        <p className="text-sm text-ink-500 leading-relaxed mb-4">
+        <p className="text-sm text-slate-500 leading-relaxed mb-4">
           Le client Supabase n&apos;a pas pu être initialisé. Les variables suivantes sont
-          requises dans le fichier <code className="font-mono text-ink-700">.env</code> à la
-          racine du monorepo :
+          requises dans <code className="font-mono text-slate-700">.env</code> à la racine
+          du monorepo :
         </p>
-        <ul className="font-mono text-sm text-rouge-brique bg-rouge-brique/5 border border-rouge-brique/20 rounded-md px-4 py-3 mb-6">
+        <ul className="font-mono text-sm text-danger bg-danger/5 border border-danger/20 rounded-xl px-4 py-3 mb-6">
           {missing.map((m) => (
             <li key={m}>· {m}</li>
           ))}
         </ul>
-        <p className="text-sm text-ink-500 leading-relaxed">
+        <p className="text-sm text-slate-500 leading-relaxed">
           Après avoir corrigé le <code className="font-mono">.env</code>, arrête et relance{' '}
           <code className="font-mono">pnpm dev:admin</code> (Vite ne recharge pas les
           variables d&apos;env à chaud).

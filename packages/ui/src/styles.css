@@ -1,76 +1,83 @@
 /*
-  Design tokens Alpha Center / alphaTrack — Tailwind CSS v4 @theme directive
-  Voir docs/plan UI/UX pour la justification de chaque token.
+  Design tokens Alpha Center / alphaTrack — Tailwind CSS v4 @theme directive.
+  Direction : moderne / tech, inspirée des dashboards type Linear, Vercel, et
+  des dashboards lime-on-slate récents (fitness/médical premium).
+  Sans serif uniquement. Coins arrondis francs. Accent lime électrique.
 */
 
 @theme {
-  /* Ink — navy héritage Alpha Center, étendu */
-  --color-ink-50: #f3f4f9;
-  --color-ink-100: #dde1ee;
-  --color-ink-200: #b3bcd6;
-  --color-ink-300: #7d8cb5;
-  --color-ink-400: #4f6092;
-  --color-ink-500: #2b3f73;
-  --color-ink-600: #14275a;
-  --color-ink-700: #001a51;
-  --color-ink-800: #00102f;
-  --color-ink-900: #00081a;
+  /* Slate — surfaces sombres (sidebar, hero cards) */
+  --color-slate-50: #f8f9fb;
+  --color-slate-100: #eff1f5;
+  --color-slate-200: #d8dce5;
+  --color-slate-300: #b0b7c5;
+  --color-slate-400: #7a8298;
+  --color-slate-500: #4d566d;
+  --color-slate-600: #2e3445;
+  --color-slate-700: #1e2230;
+  --color-slate-800: #14171f;
+  --color-slate-900: #0b0d12;
+  --color-slate-950: #050609;
 
-  /* Laurel — or académique */
-  --color-laurel-300: #ead49c;
-  --color-laurel-500: #c79a3a;
-  --color-laurel-700: #8a6418;
+  /* Lime — accent principal (CTA, état actif, badges) */
+  --color-lime-50: #f7fde4;
+  --color-lime-100: #ecfbb8;
+  --color-lime-200: #ddf788;
+  --color-lime-300: #cbf558;
+  --color-lime-400: #b8ed2c;
+  --color-lime-500: #a3d51d;   /* lime principal */
+  --color-lime-600: #82ab14;
+  --color-lime-700: #5f7e0e;
+  --color-lime-800: #44590a;
+  --color-lime-900: #2d3d07;
 
-  /* Terre cuite — accent culturel discret */
-  --color-terre-400: #c97b5c;
-  --color-terre-600: #8c4b30;
+  /* Surface — fonds clairs */
+  --color-surface-base: #ffffff;
+  --color-surface-muted: #f5f6f8;
+  --color-surface-subtle: #ebedf2;
+  --color-surface-border: #e3e5eb;
 
-  /* Papier — surfaces chaudes */
-  --color-paper-base: #fafaf7;
-  --color-paper-soft: #f3f1e9;
-  --color-paper-edge: #e2dfd2;
+  /* Sémantiques */
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+  --color-info: #3b82f6;
 
-  /* Sémantiques (sobres) */
-  --color-vert-foret: #1d6b4a;
-  --color-ambre-ble: #b88314;
-  --color-rouge-brique: #a5302a;
-
-  /* Typographie */
-  --font-display: 'Fraunces', 'Times New Roman', serif;
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  /* Typographie — Inter partout + mono pour les IDs */
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-mono: 'JetBrains Mono', 'Geist Mono', ui-monospace, monospace;
 
-  /* Rayons */
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
+  /* Rayons — coins arrondis francs, esthétique 2025 */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
   --radius-pill: 999px;
 
-  /* Ombres teintées navy */
-  --shadow-sm: 0 1px 2px rgb(0 26 81 / 0.06);
-  --shadow-md: 0 4px 12px rgb(0 26 81 / 0.08);
-  --shadow-lg: 0 12px 32px rgb(0 26 81 / 0.12);
-  --shadow-seal: inset 0 0 0 1px rgb(199 154 58 / 0.4);
+  /* Ombres — douces et neutres */
+  --shadow-xs: 0 1px 2px rgb(11 13 18 / 0.04);
+  --shadow-sm: 0 2px 4px rgb(11 13 18 / 0.06);
+  --shadow-md: 0 6px 16px rgb(11 13 18 / 0.08);
+  --shadow-lg: 0 16px 40px rgb(11 13 18 / 0.10);
+  --shadow-glow-lime: 0 0 0 4px rgb(184 237 44 / 0.22);
 }
 
 @layer base {
   html {
     font-family: var(--font-sans);
-    font-feature-settings: 'ss01', 'cv11', 'tnum';
+    font-feature-settings:
+      'cv11' on,
+      'ss03' on;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
   body {
-    background-color: var(--color-paper-base);
-    color: var(--color-ink-800);
+    background-color: var(--color-surface-muted);
+    color: var(--color-slate-800);
   }
 
-  h1, h2, h3, .display {
-    font-family: var(--font-display);
-    font-feature-settings: 'ss01', 'cv11';
-  }
-
+  /* Numérique tabulaire pour KPI et tableaux */
   .tabular {
     font-variant-numeric: tabular-nums;
   }

@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Button, Field, Input } from '@alphatrack/ui';
+import { Button, Card, Field, Input } from '@alphatrack/ui';
 import { useAuth } from '../lib/auth-context';
 import type { AuthError } from '../lib/auth-api';
 
@@ -35,58 +35,50 @@ export function LoginRoute(): JSX.Element {
   }
 
   return (
-    <main className="min-h-screen bg-paper-base grid lg:grid-cols-12">
-      {/* Colonne gauche : hero éditorial — 7/12 sur desktop, plein écran sur mobile */}
-      <section className="lg:col-span-7 bg-ink-900 text-paper-base relative overflow-hidden flex flex-col p-8 lg:p-16">
-        {/* Texture grain papier (SVG noise inline) */}
-        <div
-          aria-hidden
-          className="absolute inset-0 opacity-[0.08] pointer-events-none mix-blend-screen"
-          style={{
-            backgroundImage:
-              "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>\")",
-          }}
-        />
+    <main className="min-h-screen bg-surface-muted flex items-center justify-center p-6 relative overflow-hidden">
+      {/* Grille subtile en fond — pattern tech */}
+      <div
+        aria-hidden
+        className="absolute inset-0 opacity-[0.4] pointer-events-none"
+        style={{
+          backgroundImage:
+            'radial-gradient(circle at 1px 1px, rgb(216 220 229) 1px, transparent 0)',
+          backgroundSize: '24px 24px',
+        }}
+      />
 
-        <div className="relative z-10 flex flex-col h-full">
-          <p className="text-xs uppercase tracking-[0.3em] text-laurel-300 mb-2">
-            Alpha Center · Back-office
-          </p>
+      {/* Halo lime en haut à droite */}
+      <div
+        aria-hidden
+        className="absolute -top-32 -right-32 w-96 h-96 bg-lime-300 rounded-full blur-3xl opacity-30 pointer-events-none"
+      />
 
-          <div className="flex-1 flex flex-col justify-center max-w-2xl">
-            <h1
-              className="display text-5xl lg:text-7xl leading-[0.95] tracking-tight"
-              style={{ fontStyle: 'italic', fontWeight: 400 }}
-            >
-              alpha<span className="text-laurel-500">Track</span>
+      <div className="w-full max-w-md relative z-10">
+        {/* Logo + branding */}
+        <div className="flex items-center gap-2.5 mb-10 justify-center">
+          <div className="w-10 h-10 rounded-xl bg-slate-900 flex items-center justify-center">
+            <span className="text-lime-400 text-xl font-bold">α</span>
+          </div>
+          <div>
+            <p className="text-lg font-bold text-slate-900 tracking-tight leading-tight">
+              alphaTrack
+            </p>
+            <p className="text-xs text-slate-400 leading-tight">Back-office</p>
+          </div>
+        </div>
+
+        <Card padding="lg" className="shadow-lg">
+          <div className="mb-6">
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900 mb-1">
+              Bon retour 👋
             </h1>
-            <p className="display text-2xl lg:text-3xl mt-6 text-ink-200 leading-snug max-w-xl">
-              Le système qui transforme l&apos;exigence des concours en clarté pour chaque élève.
+            <p className="text-sm text-slate-500">
+              Connecte-toi avec ton matricule et ton mot de passe.
             </p>
           </div>
 
-          <footer className="text-xs uppercase tracking-[0.2em] text-ink-300 mt-8">
-            Yaoundé · Dschang &nbsp;—&nbsp; Préparation d&apos;élite
-          </footer>
-        </div>
-      </section>
-
-      {/* Colonne droite : formulaire — 5/12 sur desktop */}
-      <section className="lg:col-span-5 flex items-center justify-center p-8 lg:p-12">
-        <div className="w-full max-w-sm">
-          <p className="text-xs uppercase tracking-[0.2em] text-ink-400 mb-3">Connexion</p>
-          <h2 className="display text-3xl text-ink-800 mb-1">Espace administrateur</h2>
-          <p className="text-sm text-ink-500 leading-relaxed mb-8">
-            Connecte-toi avec ton matricule personnel et ton mot de passe.
-          </p>
-
-          <form onSubmit={handleSubmit} className="flex flex-col gap-5" noValidate>
-            <Field
-              id="matricule"
-              label="Matricule"
-              hint="Format : ADM-001"
-              required
-            >
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
+            <Field id="matricule" label="Matricule" hint="Format : ADM-001" required>
               <Input
                 id="matricule"
                 name="matricule"
@@ -120,7 +112,7 @@ export function LoginRoute(): JSX.Element {
             {error && (
               <div
                 role="alert"
-                className="px-3 py-2 rounded-md bg-rouge-brique/10 border border-rouge-brique/30 text-rouge-brique text-sm"
+                className="px-3.5 py-2.5 rounded-xl bg-danger/10 border border-danger/20 text-danger text-sm font-medium"
               >
                 {error}
               </div>
@@ -135,15 +127,15 @@ export function LoginRoute(): JSX.Element {
               disabled={!matricule || !password}
               className="mt-2"
             >
-              Se connecter
+              Se connecter →
             </Button>
           </form>
+        </Card>
 
-          <p className="text-xs text-ink-300 mt-8 text-center">
-            En cas d&apos;oubli du mot de passe, contacte le super-administrateur.
-          </p>
-        </div>
-      </section>
+        <p className="text-xs text-slate-400 mt-6 text-center">
+          En cas d&apos;oubli du mot de passe, contacte le super-administrateur.
+        </p>
+      </div>
     </main>
   );
 }

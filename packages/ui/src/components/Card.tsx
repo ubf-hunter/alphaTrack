@@ -2,29 +2,34 @@ import { forwardRef, type HTMLAttributes } from 'react';
 import { cn } from '../lib/cn';
 
 export interface CardProps extends HTMLAttributes<HTMLDivElement> {
-  /** Surface chaude (paper-soft) vs blanche (paper-base, défaut) */
-  tone?: 'base' | 'soft';
-  /** Padding intérieur — none/sm/md/lg */
+  /** dark = sidebar/hero card (slate fond), light = standard, accent = lime fond */
+  tone?: 'light' | 'dark' | 'accent';
   padding?: 'none' | 'sm' | 'md' | 'lg';
 }
+
+const toneStyles = {
+  light: 'bg-surface-base border border-surface-border text-slate-800',
+  dark: 'bg-slate-900 text-white border border-slate-800',
+  accent: 'bg-lime-400 text-slate-900 border border-lime-500',
+} as const;
 
 const paddingStyles = {
   none: '',
   sm: 'p-4',
-  md: 'p-6',
-  lg: 'p-8',
+  md: 'p-5',
+  lg: 'p-6',
 } as const;
 
 export const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
-  { tone = 'base', padding = 'md', className, ...props },
+  { tone = 'light', padding = 'md', className, ...props },
   ref,
 ) {
   return (
     <div
       ref={ref}
       className={cn(
-        'rounded-lg border border-paper-edge shadow-sm',
-        tone === 'soft' ? 'bg-paper-soft' : 'bg-paper-base',
+        'rounded-2xl shadow-sm',
+        toneStyles[tone],
         paddingStyles[padding],
         className,
       )}

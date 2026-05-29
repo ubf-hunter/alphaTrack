@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { Button, cn } from '@alphatrack/ui';
+import { Avatar, cn, Input } from '@alphatrack/ui';
 import { useAuth } from '../lib/auth-context';
 
 interface NavItem {
@@ -13,9 +13,11 @@ const NAV: ReadonlyArray<NavItem> = [
     to: '/',
     label: 'Tableau de bord',
     icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className="w-5 h-5">
-        <path d="M3 12l9-9 9 9" />
-        <path d="M5 10v10h14V10" />
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+        <rect x="3" y="3" width="7" height="9" rx="1.5" />
+        <rect x="14" y="3" width="7" height="5" rx="1.5" />
+        <rect x="14" y="12" width="7" height="9" rx="1.5" />
+        <rect x="3" y="16" width="7" height="5" rx="1.5" />
       </svg>
     ),
   },
@@ -23,9 +25,10 @@ const NAV: ReadonlyArray<NavItem> = [
     to: '/evaluations',
     label: 'Évaluations',
     icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className="w-5 h-5">
-        <rect x="4" y="3" width="16" height="18" rx="2" />
-        <path d="M8 7h8M8 11h8M8 15h5" />
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+        <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" />
+        <rect x="9" y="3" width="6" height="4" rx="1" />
+        <path d="M9 12h6M9 16h4" />
       </svg>
     ),
   },
@@ -33,9 +36,11 @@ const NAV: ReadonlyArray<NavItem> = [
     to: '/eleves',
     label: 'Élèves',
     icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className="w-5 h-5">
-        <circle cx="12" cy="8" r="4" />
-        <path d="M4 21c0-4 4-7 8-7s8 3 8 7" />
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+        <path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2" />
+        <circle cx="9" cy="7" r="4" />
+        <path d="M22 21v-2a4 4 0 00-3-3.87" />
+        <path d="M16 3.13a4 4 0 010 7.75" />
       </svg>
     ),
   },
@@ -43,8 +48,9 @@ const NAV: ReadonlyArray<NavItem> = [
     to: '/referentiel',
     label: 'Référentiel',
     icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className="w-5 h-5">
-        <path d="M4 4h16v6H4zM4 14h16v6H4z" />
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+        <path d="M4 19.5A2.5 2.5 0 016.5 17H20" />
+        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" />
       </svg>
     ),
   },
@@ -59,75 +65,106 @@ export function AdminLayout(): JSX.Element {
     navigate('/login', { replace: true });
   }
 
+  const fullName = admin ? `${admin.matricule}` : '';
+
   return (
-    <div className="min-h-screen flex bg-paper-base">
-      {/* Sidebar verticale 72px — pure icônes, label au tooltip natif */}
-      <aside className="w-[72px] shrink-0 bg-ink-900 text-paper-base flex flex-col items-center py-5 gap-2">
-        <div className="w-10 h-10 rounded-md bg-laurel-500 flex items-center justify-center text-ink-900 font-display font-bold text-lg mb-3">
-          α
+    <div className="min-h-screen flex bg-surface-muted">
+      {/* Sidebar slate sombre avec coins arrondis */}
+      <aside className="w-[76px] shrink-0 m-3 mr-0">
+        <div className="h-[calc(100vh-1.5rem)] bg-slate-900 rounded-3xl flex flex-col items-center py-5 px-3 gap-2">
+          {/* Logo */}
+          <div className="w-11 h-11 rounded-2xl bg-lime-400 flex items-center justify-center text-slate-900 font-bold text-xl mb-4 shadow-glow-lime">
+            α
+          </div>
+
+          {/* Nav principale */}
+          <nav className="flex-1 flex flex-col gap-1 w-full">
+            {NAV.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.to === '/'}
+                title={item.label}
+                className={({ isActive }) =>
+                  cn(
+                    'flex items-center justify-center h-11 w-11 rounded-xl transition-all duration-150 mx-auto',
+                    'text-slate-400 hover:text-white hover:bg-slate-800',
+                    isActive && 'bg-lime-400 text-slate-900 hover:bg-lime-300 hover:text-slate-900',
+                  )
+                }
+              >
+                {item.icon}
+                <span className="sr-only">{item.label}</span>
+              </NavLink>
+            ))}
+          </nav>
+
+          {/* Bouton logout en bas */}
+          <button
+            type="button"
+            onClick={handleLogout}
+            title="Se déconnecter"
+            className="w-11 h-11 rounded-xl flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800 transition-all duration-150"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+              <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
+              <path d="M16 17l5-5-5-5M21 12H9" />
+            </svg>
+            <span className="sr-only">Se déconnecter</span>
+          </button>
         </div>
-
-        <nav className="flex-1 flex flex-col gap-1 w-full px-3">
-          {NAV.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              end={item.to === '/'}
-              title={item.label}
-              className={({ isActive }) =>
-                cn(
-                  'flex items-center justify-center h-10 rounded-md transition-colors',
-                  'text-ink-200 hover:text-paper-base hover:bg-ink-700',
-                  isActive && 'bg-ink-700 text-laurel-300',
-                )
-              }
-            >
-              {item.icon}
-              <span className="sr-only">{item.label}</span>
-            </NavLink>
-          ))}
-        </nav>
-
-        <button
-          type="button"
-          onClick={handleLogout}
-          title="Se déconnecter"
-          className="w-10 h-10 rounded-md flex items-center justify-center text-ink-300 hover:text-paper-base hover:bg-ink-700 transition-colors"
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className="w-5 h-5">
-            <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4" />
-            <path d="M10 17l-5-5 5-5M5 12h12" />
-          </svg>
-          <span className="sr-only">Se déconnecter</span>
-        </button>
       </aside>
 
       {/* Zone principale */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 p-3">
         {/* Topbar */}
-        <header className="h-14 px-6 border-b border-paper-edge flex items-center justify-between bg-paper-base">
-          <div className="text-xs text-ink-400 uppercase tracking-[0.18em]">
-            Session active
+        <header className="bg-surface-base rounded-2xl px-5 py-3 border border-surface-border flex items-center justify-between gap-4">
+          {/* Search */}
+          <div className="flex-1 max-w-md">
+            <Input
+              placeholder="Rechercher un élève, une évaluation, un sous-centre…"
+              className="h-10 bg-surface-muted border-transparent"
+              leftIcon={
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                  <circle cx="11" cy="11" r="7" />
+                  <path d="m21 21-4.3-4.3" />
+                </svg>
+              }
+            />
           </div>
+
           <div className="flex items-center gap-3">
-            {admin && (
-              <div className="text-right">
-                <p className="text-sm font-medium text-ink-700 leading-tight">
-                  {admin.matricule}
-                </p>
-                <p className="text-xs text-ink-400 uppercase tracking-wider leading-tight">
-                  {admin.role === 'admin' ? 'Super-administrateur' : 'Responsable saisie'}
-                </p>
-              </div>
-            )}
-            <Button variant="ghost" size="sm" onClick={handleLogout}>
-              Déconnexion
-            </Button>
+            {/* Notifications icon */}
+            <button
+              type="button"
+              className="w-10 h-10 rounded-xl border border-surface-border bg-surface-base text-slate-500 hover:bg-surface-muted hover:text-slate-700 flex items-center justify-center transition-colors"
+              title="Notifications"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                <path d="M6 8a6 6 0 0112 0c0 7 3 9 3 9H3s3-2 3-9" />
+                <path d="M10.3 21a1.94 1.94 0 003.4 0" />
+              </svg>
+            </button>
+
+            {/* Admin chip */}
+            <div className="flex items-center gap-3 pl-3 border-l border-surface-border">
+              {admin && (
+                <div className="text-right">
+                  <p className="text-sm font-semibold text-slate-800 leading-tight">
+                    {admin.matricule}
+                  </p>
+                  <p className="text-xs text-slate-400 leading-tight">
+                    {admin.role === 'admin' ? 'Super-administrateur' : 'Responsable saisie'}
+                  </p>
+                </div>
+              )}
+              <Avatar name={fullName} size="md" />
+            </div>
           </div>
         </header>
 
         {/* Contenu principal */}
-        <main className="flex-1 overflow-auto p-8">
+        <main className="flex-1 overflow-auto mt-3">
           <Outlet />
         </main>
       </div>

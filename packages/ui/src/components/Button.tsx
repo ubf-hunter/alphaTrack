@@ -1,7 +1,7 @@
 import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from 'react';
 import { cn } from '../lib/cn';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'seal';
+export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'dark';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -15,32 +15,29 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantStyles: Record<ButtonVariant, string> = {
   primary:
-    'bg-ink-700 text-paper-base hover:bg-ink-800 active:bg-ink-900 ' +
-    'disabled:bg-ink-300 disabled:text-paper-soft ' +
-    'focus-visible:ring-2 focus-visible:ring-laurel-500 focus-visible:ring-offset-2 focus-visible:ring-offset-paper-base',
+    'bg-lime-400 text-slate-900 hover:bg-lime-300 active:bg-lime-500 ' +
+    'disabled:bg-slate-200 disabled:text-slate-400 ' +
+    'focus-visible:ring-4 focus-visible:ring-lime-400/30',
   secondary:
-    'bg-paper-soft text-ink-700 border border-paper-edge hover:bg-paper-edge hover:border-ink-300 ' +
-    'active:bg-ink-50 disabled:opacity-60 ' +
-    'focus-visible:ring-2 focus-visible:ring-ink-400 focus-visible:ring-offset-2',
+    'bg-surface-base text-slate-700 border border-surface-border hover:bg-surface-muted ' +
+    'hover:border-slate-300 active:bg-surface-subtle ' +
+    'disabled:opacity-50 focus-visible:ring-4 focus-visible:ring-slate-200',
   ghost:
-    'bg-transparent text-ink-600 hover:bg-ink-50 hover:text-ink-800 ' +
-    'active:bg-ink-100 disabled:opacity-50 ' +
-    'focus-visible:ring-2 focus-visible:ring-ink-300',
+    'bg-transparent text-slate-600 hover:bg-surface-muted hover:text-slate-800 ' +
+    'active:bg-surface-subtle disabled:opacity-50 ' +
+    'focus-visible:ring-2 focus-visible:ring-slate-300',
   danger:
-    'bg-rouge-brique text-paper-base hover:bg-[#8a2622] active:bg-[#6f1f1c] ' +
-    'disabled:opacity-60 ' +
-    'focus-visible:ring-2 focus-visible:ring-rouge-brique focus-visible:ring-offset-2',
-  seal:
-    'bg-laurel-500 text-ink-900 border border-laurel-700 hover:bg-laurel-300 ' +
-    'active:bg-laurel-700 active:text-paper-base disabled:opacity-50 ' +
-    'focus-visible:ring-2 focus-visible:ring-laurel-700 focus-visible:ring-offset-2 ' +
-    'shadow-sm',
+    'bg-danger text-white hover:bg-[#dc2626] active:bg-[#b91c1c] ' +
+    'disabled:opacity-60 focus-visible:ring-4 focus-visible:ring-red-400/30',
+  dark:
+    'bg-slate-900 text-white hover:bg-slate-800 active:bg-slate-950 ' +
+    'disabled:opacity-60 focus-visible:ring-4 focus-visible:ring-slate-400/30',
 };
 
 const sizeStyles: Record<ButtonSize, string> = {
-  sm: 'h-8 px-3 text-sm gap-1.5',
-  md: 'h-10 px-4 text-sm gap-2',
-  lg: 'h-12 px-6 text-base gap-2',
+  sm: 'h-8 px-3 text-xs gap-1.5 rounded-md',
+  md: 'h-10 px-4 text-sm gap-2 rounded-lg',
+  lg: 'h-12 px-6 text-base gap-2 rounded-xl',
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
@@ -65,8 +62,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       type={type}
       disabled={disabled || loading}
       className={cn(
-        'inline-flex items-center justify-center font-medium rounded-md',
-        'transition-colors duration-150 outline-none select-none',
+        'inline-flex items-center justify-center font-semibold tracking-tight',
+        'transition-all duration-150 outline-none select-none',
         'disabled:cursor-not-allowed',
         variantStyles[variant],
         sizeStyles[size],
