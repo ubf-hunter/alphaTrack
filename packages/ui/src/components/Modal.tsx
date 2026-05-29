@@ -33,7 +33,7 @@ export function Modal({
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 z-50 bg-slate-950/40 backdrop-blur-sm data-[state=open]:animate-in data-[state=open]:fade-in-0" />
+        <Dialog.Overlay className="fixed inset-0 z-50 bg-slate-950/50 backdrop-blur-sm" />
         <Dialog.Content
           className={cn(
             'fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2',
@@ -47,11 +47,13 @@ export function Modal({
               <Dialog.Title className="text-lg font-bold tracking-tight text-slate-900 truncate">
                 {title}
               </Dialog.Title>
-              {description && (
-                <Dialog.Description className="text-sm text-slate-500 mt-0.5">
-                  {description}
-                </Dialog.Description>
-              )}
+              {/* Radix exige toujours une Description (a11y). Si pas fournie, on
+                  reprend le titre en sr-only pour satisfaire le warning. */}
+              <Dialog.Description
+                className={description ? 'text-sm text-slate-500 mt-0.5' : 'sr-only'}
+              >
+                {description ?? title}
+              </Dialog.Description>
             </div>
             <Dialog.Close
               className="shrink-0 w-8 h-8 rounded-lg text-slate-400 hover:bg-surface-muted hover:text-slate-700 flex items-center justify-center transition-colors"
