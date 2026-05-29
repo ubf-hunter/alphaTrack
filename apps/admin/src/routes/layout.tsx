@@ -164,7 +164,7 @@ export function AdminLayout(): JSX.Element {
         </header>
 
         {/* Contenu principal */}
-        <main className="flex-1 overflow-auto mt-3">
+        <main className="flex-1 overflow-auto mt-3 px-2 sm:px-4 pb-6">
           <Outlet />
         </main>
       </div>

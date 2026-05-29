@@ -9,10 +9,14 @@ export interface DashboardStats {
   derniereEvalLibelle: string | null;
   derniereEvalStatut: string | null;
   tauxSaisie: number | null;
+  /** Erreurs partielles par table (pour debug — n'arrête pas le rendu) */
+  errors: Record<string, string>;
 }
 
 async function fetchStats(): Promise<DashboardStats> {
-  // 1. Compteurs basiques — head=true ne retourne pas les lignes, juste le count
+  const errors: Record<string, string> = {};
+
+  // 1. Comptages en parallèle — chaque erreur est isolée pour ne pas casser les autres
   const [elevesRes, inscriptionsRes, enCoursRes, publieesRes, derniereRes] = await Promise.all([
     supabase.from('eleves').select('*', { count: 'exact', head: true }),
     supabase
@@ -35,9 +39,36 @@ async function fetchStats(): Promise<DashboardStats> {
       .maybeSingle(),
   ]);
 
+  if (elevesRes.error) errors['eleves'] = elevesRes.error.message;
+  if (inscriptionsRes.error) errors['inscriptions'] = inscriptionsRes.error.message;
+  if (enCoursRes.error) errors['evaluations_en_cours'] = enCoursRes.error.message;
+  if (publieesRes.error) errors['evaluations_publiees'] = publieesRes.error.message;
+  if (derniereRes.error) errors['derniere_eval'] = derniereRes.error.message;
+
+  // Log structuré pour debug — visible dans la console F12 du navigateur
+  console.info('[dashboard:stats]', {
+    eleves: { count: elevesRes.count, status: elevesRes.status, error: elevesRes.error?.message },
+    inscriptions: {
+      count: inscriptionsRes.count,
+      status: inscriptionsRes.status,
+      error: inscriptionsRes.error?.message,
+    },
+    evalsEnCours: {
+      count: enCoursRes.count,
+      status: enCoursRes.status,
+      error: enCoursRes.error?.message,
+    },
+    evalsPubliees: {
+      count: publieesRes.count,
+      status: publieesRes.status,
+      error: publieesRes.error?.message,
+    },
+    derniereEval: derniereRes.data ?? null,
+  });
+
   const derniere = derniereRes.data;
 
-  // 2. Taux de saisie sur la dernière évaluation : nb notes saisies / (nb inscriptions × nb matières attendues)
+  // 2. Taux de saisie sur la dernière évaluation
   let tauxSaisie: number | null = null;
   if (derniere) {
     const [notesRes, attenduesRes] = await Promise.all([
@@ -54,6 +85,9 @@ async function fetchStats(): Promise<DashboardStats> {
         .eq('actif', true)
         .eq('session', derniere.session),
     ]);
+
+    if (notesRes.error) errors['notes'] = notesRes.error.message;
+    if (attenduesRes.error) errors['attendues'] = attenduesRes.error.message;
 
     const notesSaisies = notesRes.count ?? 0;
     type InscriptionRow = {
@@ -77,6 +111,7 @@ async function fetchStats(): Promise<DashboardStats> {
     derniereEvalLibelle: derniere?.libelle ?? null,
     derniereEvalStatut: derniere?.statut ?? null,
     tauxSaisie,
+    errors,
   };
 }
 
