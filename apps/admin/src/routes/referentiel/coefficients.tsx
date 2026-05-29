@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Card, Icon, Pill } from '@alphatrack/ui';
 import { useConcoursList } from '../../hooks/useConcours';
 import { useMatieresList } from '../../hooks/useMatieres';
@@ -16,11 +16,11 @@ export function CoefficientsRoute(): JSX.Element {
   const remove = useDeleteCoefficient();
 
   const [pending, setPending] = useState<Record<string, boolean>>({});
+  const [savedFlash, setSavedFlash] = useState<Record<string, boolean>>({});
 
   const isLoading = concours.isLoading || matieres.isLoading || coeffs.isLoading;
   const hasError = concours.error || matieres.error || coeffs.error;
 
-  // Index { 'concours_id::matiere_id' → coefficient }
   const coeffMap = useMemo(() => {
     const m = new Map<string, number>();
     coeffs.data?.forEach((c) => m.set(`${c.concours_id}::${c.matiere_id}`, c.coefficient));
@@ -29,6 +29,11 @@ export function CoefficientsRoute(): JSX.Element {
 
   function cellKey(concoursId: string, matiereId: string): string {
     return `${concoursId}::${matiereId}`;
+  }
+
+  function flashSaved(k: string): void {
+    setSavedFlash((s) => ({ ...s, [k]: true }));
+    setTimeout(() => setSavedFlash((s) => ({ ...s, [k]: false })), 1200);
   }
 
   async function handleSave(
@@ -40,11 +45,11 @@ export function CoefficientsRoute(): JSX.Element {
     const trimmed = rawValue.trim();
 
     if (trimmed === '') {
-      // Suppression
       if (coeffMap.has(k)) {
         setPending((p) => ({ ...p, [k]: true }));
         try {
           await remove.mutateAsync({ concours_id: concoursId, matiere_id: matiereId });
+          flashSaved(k);
         } finally {
           setPending((p) => ({ ...p, [k]: false }));
         }
@@ -65,6 +70,7 @@ export function CoefficientsRoute(): JSX.Element {
         matiere_id: matiereId,
         coefficient: parsed,
       });
+      flashSaved(k);
     } finally {
       setPending((p) => ({ ...p, [k]: false }));
     }
@@ -104,31 +110,44 @@ export function CoefficientsRoute(): JSX.Element {
 
   return (
     <div>
-      <div className="mb-4 flex items-center justify-between flex-wrap gap-2">
+      <div className="mb-4 flex items-start justify-between flex-wrap gap-3">
         <div>
           <h2 className="text-lg font-bold text-slate-900">Matrice des coefficients</h2>
           <p className="text-sm text-slate-500 max-w-2xl">
-            Chaque cellule = coefficient d&apos;une matière dans un concours. Vide = la matière
-            ne fait pas partie du concours. Sauvegarde automatique au blur (Tab/Enter).
+            Clique sur une cellule, tape une valeur (0,01 → 99) puis{' '}
+            <kbd className="px-1.5 py-0.5 text-[11px] font-mono bg-surface-base border border-surface-border rounded">
+              Tab
+            </kbd>{' '}
+            ou{' '}
+            <kbd className="px-1.5 py-0.5 text-[11px] font-mono bg-surface-base border border-surface-border rounded">
+              Entrée
+            </kbd>{' '}
+            pour sauvegarder.{' '}
+            <kbd className="px-1.5 py-0.5 text-[11px] font-mono bg-surface-base border border-surface-border rounded">
+              Échap
+            </kbd>{' '}
+            annule. Vide la cellule pour retirer la matière du concours.
           </p>
         </div>
-        <Pill tone="lime">{coeffMap.size} cellules définies</Pill>
+        <Pill tone="lime" size="md">
+          {coeffMap.size} {coeffMap.size > 1 ? 'cellules' : 'cellule'} définies
+        </Pill>
       </div>
 
       <div className="overflow-auto rounded-2xl border border-surface-border bg-surface-base shadow-sm">
         <table className="w-full text-sm border-collapse">
           <thead>
             <tr className="bg-surface-muted border-b border-surface-border">
-              <th className="sticky left-0 z-10 bg-surface-muted px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-slate-500 min-w-[200px]">
+              <th className="sticky left-0 z-10 bg-surface-muted px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-slate-500 min-w-[220px] border-r border-surface-border">
                 Matière ↓ &nbsp; Concours →
               </th>
               {concours.data.map((c) => (
                 <th
                   key={c.id}
-                  className="px-3 py-3 text-center text-[11px] font-semibold uppercase tracking-wider text-slate-700 min-w-[110px]"
+                  className="px-3 py-3 text-center text-[11px] font-semibold uppercase tracking-wider text-slate-700 min-w-[120px]"
                 >
                   <div className="flex flex-col items-center gap-1">
-                    <span className="font-mono">{c.sigle}</span>
+                    <span className="font-mono text-slate-900">{c.sigle}</span>
                     {!c.actif && (
                       <span className="text-[9px] text-slate-400 normal-case">Inactif</span>
                     )}
@@ -138,31 +157,70 @@ export function CoefficientsRoute(): JSX.Element {
             </tr>
           </thead>
           <tbody className="divide-y divide-surface-border">
-            {matieres.data.map((m) => (
-              <tr key={m.id} className="hover:bg-surface-muted/30 transition-colors">
-                <td className="sticky left-0 z-10 bg-surface-base hover:bg-surface-muted/30 px-4 py-2.5 border-r border-surface-border">
-                  <div className="flex flex-col">
-                    <span className="font-medium text-slate-800">{m.nom}</span>
-                    <span className="text-xs font-mono text-slate-400">{m.code}</span>
-                  </div>
-                </td>
-                {concours.data.map((c) => {
-                  const k = cellKey(c.id, m.id);
-                  const currentCoef = coeffMap.get(k);
-                  const isPending = pending[k];
-                  return (
-                    <td key={c.id} className="px-2 py-2 text-center">
-                      <CoeffCell
-                        defaultValue={currentCoef}
-                        onSave={(v) => handleSave(c.id, m.id, v)}
-                        pending={isPending ?? false}
-                      />
-                    </td>
-                  );
-                })}
-              </tr>
-            ))}
+            {matieres.data.map((m) => {
+              const sumCoefs = concours.data.reduce((acc, c) => {
+                return acc + (coeffMap.get(cellKey(c.id, m.id)) ?? 0);
+              }, 0);
+              return (
+                <tr key={m.id} className="hover:bg-surface-muted/30 transition-colors group">
+                  <td className="sticky left-0 z-10 bg-surface-base group-hover:bg-surface-muted/40 px-4 py-2.5 border-r border-surface-border transition-colors">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex flex-col min-w-0">
+                        <span className="font-medium text-slate-800 truncate">{m.nom}</span>
+                        <span className="text-xs font-mono text-slate-400">{m.code}</span>
+                      </div>
+                      {sumCoefs > 0 && (
+                        <span className="shrink-0 text-[10px] font-mono text-slate-400 px-1.5 py-0.5 rounded bg-surface-muted">
+                          Σ {sumCoefs}
+                        </span>
+                      )}
+                    </div>
+                  </td>
+                  {concours.data.map((c) => {
+                    const k = cellKey(c.id, m.id);
+                    const currentCoef = coeffMap.get(k);
+                    return (
+                      <td key={c.id} className="px-2 py-2 text-center">
+                        <CoeffCell
+                          coefKey={k}
+                          defaultValue={currentCoef}
+                          onSave={(v) => handleSave(c.id, m.id, v)}
+                          pending={pending[k] ?? false}
+                          justSaved={savedFlash[k] ?? false}
+                        />
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
           </tbody>
+          {/* Footer : total des coefficients par concours */}
+          <tfoot>
+            <tr className="bg-surface-muted/60 border-t-2 border-surface-border">
+              <td className="sticky left-0 z-10 bg-surface-muted/80 px-4 py-2.5 border-r border-surface-border">
+                <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+                  Total coefficients
+                </span>
+              </td>
+              {concours.data.map((c) => {
+                const sum = matieres.data.reduce((acc, m) => {
+                  return acc + (coeffMap.get(cellKey(c.id, m.id)) ?? 0);
+                }, 0);
+                return (
+                  <td key={c.id} className="px-2 py-2.5 text-center">
+                    {sum > 0 ? (
+                      <span className="inline-flex items-center justify-center px-2 py-1 rounded-md bg-slate-900 text-lime-400 font-mono font-semibold text-xs tabular">
+                        {sum}
+                      </span>
+                    ) : (
+                      <span className="text-slate-300 text-xs">—</span>
+                    )}
+                  </td>
+                );
+              })}
+            </tr>
+          </tfoot>
         </table>
       </div>
     </div>
@@ -170,46 +228,78 @@ export function CoefficientsRoute(): JSX.Element {
 }
 
 interface CoeffCellProps {
+  coefKey: string;
   defaultValue: number | undefined;
   onSave: (rawValue: string) => Promise<void>;
   pending: boolean;
+  justSaved: boolean;
 }
 
-function CoeffCell({ defaultValue, onSave, pending }: CoeffCellProps): JSX.Element {
+function CoeffCell({
+  coefKey,
+  defaultValue,
+  onSave,
+  pending,
+  justSaved,
+}: CoeffCellProps): JSX.Element {
   const [value, setValue] = useState<string>(defaultValue?.toString() ?? '');
+  const focused = useRef(false);
 
-  // Si la valeur en DB change (refetch), on synchronise
-  // (sauf si l'utilisateur est en train d'éditer cette cellule — détection via focus)
-  // Ici, simple : on remet le défaut seulement si la cellule n'est pas focus
-  // (gestion plus fine possible plus tard).
+  // Synchronise la valeur locale avec defaultValue quand celle-ci change EN DEHORS
+  // du focus utilisateur (refetch après sauvegarde, etc.)
+  useEffect(() => {
+    if (!focused.current) {
+      setValue(defaultValue?.toString() ?? '');
+    }
+  }, [defaultValue, coefKey]);
 
   const hasValue = value.trim() !== '';
 
   return (
-    <input
-      type="text"
-      inputMode="decimal"
-      value={value}
-      onChange={(e) => setValue(e.target.value)}
-      onBlur={() => void onSave(value)}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter') e.currentTarget.blur();
-        if (e.key === 'Escape') {
-          setValue(defaultValue?.toString() ?? '');
-          e.currentTarget.blur();
-        }
-      }}
-      placeholder="—"
-      disabled={pending}
-      className={`
-        w-14 h-9 px-2 text-center font-mono tabular text-sm rounded-lg
-        border outline-none transition-all
-        ${hasValue
-          ? 'border-surface-border bg-lime-50 text-slate-900 font-semibold focus:border-lime-400 focus:ring-2 focus:ring-lime-400/30'
-          : 'border-transparent bg-surface-muted/50 text-slate-400 focus:border-slate-300 focus:bg-surface-base focus:ring-2 focus:ring-slate-200'
-        }
-        disabled:opacity-50
-      `}
-    />
+    <div className="relative inline-block">
+      <input
+        type="text"
+        inputMode="decimal"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        onFocus={() => {
+          focused.current = true;
+        }}
+        onBlur={() => {
+          focused.current = false;
+          void onSave(value);
+        }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') e.currentTarget.blur();
+          if (e.key === 'Escape') {
+            setValue(defaultValue?.toString() ?? '');
+            e.currentTarget.blur();
+          }
+        }}
+        placeholder="—"
+        disabled={pending}
+        aria-label={`Coefficient ${coefKey}`}
+        className={`
+          w-16 h-10 px-2 text-center font-mono tabular text-sm rounded-lg
+          border-2 outline-none transition-all cursor-text
+          ${hasValue
+            ? 'bg-lime-100 border-lime-300 text-slate-900 font-bold hover:bg-lime-200 hover:border-lime-400 focus:bg-lime-50 focus:border-lime-500 focus:ring-4 focus:ring-lime-400/30'
+            : 'bg-surface-muted/40 border-transparent text-slate-400 hover:bg-surface-muted hover:border-slate-300 focus:bg-surface-base focus:border-slate-400 focus:ring-4 focus:ring-slate-200'
+          }
+          disabled:opacity-50 disabled:cursor-wait
+        `.trim()}
+      />
+      {pending && (
+        <span className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <span className="inline-block w-3 h-3 border-2 border-lime-600 border-r-transparent rounded-full animate-spin" />
+        </span>
+      )}
+      {justSaved && !pending && (
+        <span
+          className="absolute -top-1 -right-1 w-3 h-3 bg-success rounded-full pointer-events-none"
+          aria-hidden
+        />
+      )}
+    </div>
   );
 }
