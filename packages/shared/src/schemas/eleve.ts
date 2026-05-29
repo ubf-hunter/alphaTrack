@@ -22,6 +22,7 @@ export const eleveCreateSchema = z.object({
     .optional(),
   email: z.string().email().optional().or(z.literal('')),
   photo_url: z.string().url().optional().or(z.literal('')),
+  etablissement_origine: z.string().min(2).max(160).optional().or(z.literal('')),
 });
 
 export type EleveCreate = z.infer<typeof eleveCreateSchema>;

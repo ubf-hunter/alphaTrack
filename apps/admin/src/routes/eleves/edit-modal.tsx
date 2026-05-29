@@ -11,7 +11,12 @@ import {
   Modal,
   Pill,
 } from '@alphatrack/ui';
-import { useUpdateEleve, useResetEleveCode, type EleveListItem } from '../../hooks/useEleves';
+import {
+  useUpdateEleve,
+  useResetEleveCode,
+  useEtablissementsList,
+  type EleveListItem,
+} from '../../hooks/useEleves';
 import { InscriptionsSection } from './inscriptions-section';
 import { ShareCodeBlock } from './share-code-block';
 
@@ -26,6 +31,11 @@ const editSchema = z.object({
     .optional()
     .or(z.literal('')),
   email: z.string().email('Email invalide').optional().or(z.literal('')),
+  etablissement_origine: z
+    .string()
+    .max(160, 'Maximum 160 caractères')
+    .optional()
+    .or(z.literal('')),
 });
 
 type EditFormValues = z.infer<typeof editSchema>;
@@ -39,6 +49,7 @@ interface Props {
 export function EditEleveModal({ open, onClose, eleve }: Props): JSX.Element {
   const update = useUpdateEleve();
   const resetCode = useResetEleveCode();
+  const etablissements = useEtablissementsList();
   const [serverError, setServerError] = useState<string | null>(null);
   const [newCode, setNewCode] = useState<string | null>(null);
   const [confirmReset, setConfirmReset] = useState(false);
@@ -59,6 +70,7 @@ export function EditEleveModal({ open, onClose, eleve }: Props): JSX.Element {
       date_naissance: eleve.date_naissance,
       telephone: eleve.telephone ?? '',
       email: eleve.email ?? '',
+      etablissement_origine: eleve.etablissement_origine ?? '',
     },
   });
 
@@ -71,8 +83,19 @@ export function EditEleveModal({ open, onClose, eleve }: Props): JSX.Element {
       date_naissance: eleve.date_naissance,
       telephone: eleve.telephone ?? '',
       email: eleve.email ?? '',
+      etablissement_origine: eleve.etablissement_origine ?? '',
     });
-  }, [eleve.id, reset, eleve.nom, eleve.prenom, eleve.sexe, eleve.date_naissance, eleve.telephone, eleve.email]);
+  }, [
+    eleve.id,
+    reset,
+    eleve.nom,
+    eleve.prenom,
+    eleve.sexe,
+    eleve.date_naissance,
+    eleve.telephone,
+    eleve.email,
+    eleve.etablissement_origine,
+  ]);
 
   const sexeValue = watch('sexe');
 
@@ -88,6 +111,7 @@ export function EditEleveModal({ open, onClose, eleve }: Props): JSX.Element {
           date_naissance: values.date_naissance,
           telephone: values.telephone || null,
           email: values.email || null,
+          etablissement_origine: values.etablissement_origine?.trim() || null,
         },
       });
       onClose();
@@ -228,6 +252,29 @@ export function EditEleveModal({ open, onClose, eleve }: Props): JSX.Element {
               />
             </Field>
           </div>
+
+          <Field
+            id="edit-etablissement"
+            label="Établissement d'origine"
+            hint="Lycée ou collège fréquenté avant Alpha Center"
+            error={errors.etablissement_origine?.message}
+          >
+            <Input
+              id="edit-etablissement"
+              list="edit-etablissements-suggestions"
+              placeholder="Ex. Lycée Général Leclerc, Yaoundé"
+              {...register('etablissement_origine')}
+              invalid={!!errors.etablissement_origine}
+              autoComplete="off"
+            />
+            {(etablissements.data?.length ?? 0) > 0 && (
+              <datalist id="edit-etablissements-suggestions">
+                {etablissements.data!.map((etb) => (
+                  <option key={etb} value={etb} />
+                ))}
+              </datalist>
+            )}
+          </Field>
 
           {serverError && (
             <div

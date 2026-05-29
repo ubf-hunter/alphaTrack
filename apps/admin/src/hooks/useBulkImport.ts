@@ -44,6 +44,12 @@ const rowSchema = z.object({
     .trim()
     .optional()
     .transform((v) => (v && v.length > 0 ? v.toUpperCase() : undefined)),
+  etablissement_origine: z
+    .string()
+    .trim()
+    .optional()
+    .transform((v) => (v && v.length > 0 ? v : undefined))
+    .pipe(z.string().max(160, 'Établissement trop long (max 160)').optional()),
 });
 
 export type RawCsvRow = Record<string, string>;
@@ -64,6 +70,7 @@ export interface BulkImportSummary {
     prenom: string;
     nom: string;
     telephone: string | null;
+    etablissement_origine: string | null;
     concours_sigle: string | null;
     sous_centre_code: string | null;
   }>;
@@ -78,6 +85,7 @@ const REQUIRED_HEADERS = [
   'date_naissance',
   'telephone',
   'email',
+  'etablissement_origine',
   'concours_sigle',
   'sous_centre_code',
 ] as const;
@@ -100,6 +108,13 @@ const HEADER_ALIASES: Record<string, string> = {
   phone: 'telephone',
   email: 'email',
   e_mail: 'email',
+  etablissement: 'etablissement_origine',
+  etablissement_origine: 'etablissement_origine',
+  etablissement_d_origine: 'etablissement_origine',
+  lycee: 'etablissement_origine',
+  ecole: 'etablissement_origine',
+  ecole_origine: 'etablissement_origine',
+  college: 'etablissement_origine',
   concours: 'concours_sigle',
   concours_sigle: 'concours_sigle',
   sigle: 'concours_sigle',
@@ -291,6 +306,7 @@ export function useBulkImportEleves() {
               date_naissance: data.date_naissance,
               telephone: data.telephone ?? null,
               email: data.email ?? null,
+              etablissement_origine: data.etablissement_origine ?? null,
             })
             .select()
             .single();
@@ -329,6 +345,7 @@ export function useBulkImportEleves() {
             prenom: data.prenom,
             nom: data.nom,
             telephone: data.telephone ?? null,
+            etablissement_origine: data.etablissement_origine ?? null,
             concours_sigle: data.concours_sigle ?? null,
             sous_centre_code: data.sous_centre_code ?? null,
           });

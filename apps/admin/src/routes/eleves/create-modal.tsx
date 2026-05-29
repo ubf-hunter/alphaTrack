@@ -13,7 +13,11 @@ import {
   type SelectOption,
 } from '@alphatrack/ui';
 import { Utils } from '@alphatrack/shared';
-import { useCreateEleve, type CreateEleveResult } from '../../hooks/useEleves';
+import {
+  useCreateEleve,
+  useEtablissementsList,
+  type CreateEleveResult,
+} from '../../hooks/useEleves';
 import { useCreateInscription } from '../../hooks/useInscriptions';
 import { useConcoursList } from '../../hooks/useConcours';
 import { useSousCentresList } from '../../hooks/useSousCentres';
@@ -32,6 +36,10 @@ const formSchema = z.object({
     .optional()
     .or(z.literal('')),
   email: z.string().email('Email invalide').optional().or(z.literal('')),
+  etablissement_origine: z
+    .string()
+    .min(2, 'Au moins 2 caractères')
+    .max(160, 'Maximum 160 caractères'),
   // Inscription optionnelle à la création
   concours_id: z.string().uuid().optional().or(z.literal('')),
   sous_centre_id: z.string().uuid().optional().or(z.literal('')),
@@ -50,6 +58,7 @@ export function CreateEleveModal({ open, onClose }: Props): JSX.Element {
 
   const concours = useConcoursList();
   const sousCentres = useSousCentresList();
+  const etablissements = useEtablissementsList();
   const create = useCreateEleve();
   const createInscription = useCreateInscription();
 
@@ -84,6 +93,7 @@ export function CreateEleveModal({ open, onClose }: Props): JSX.Element {
       date_naissance: '',
       telephone: '',
       email: '',
+      etablissement_origine: '',
       concours_id: '',
       sous_centre_id: '',
     },
@@ -105,6 +115,7 @@ export function CreateEleveModal({ open, onClose }: Props): JSX.Element {
         date_naissance: values.date_naissance,
         telephone: values.telephone || undefined,
         email: values.email || undefined,
+        etablissement_origine: values.etablissement_origine.trim(),
         session,
       });
 
@@ -263,6 +274,30 @@ export function CreateEleveModal({ open, onClose }: Props): JSX.Element {
             />
           </Field>
         </div>
+
+        <Field
+          id="etablissement_origine"
+          label="Établissement d'origine"
+          hint="Lycée ou collège fréquenté avant Alpha Center"
+          error={errors.etablissement_origine?.message}
+          required
+        >
+          <Input
+            id="etablissement_origine"
+            list="etablissements-suggestions"
+            placeholder="Ex. Lycée Général Leclerc, Yaoundé"
+            {...register('etablissement_origine')}
+            invalid={!!errors.etablissement_origine}
+            autoComplete="off"
+          />
+          {(etablissements.data?.length ?? 0) > 0 && (
+            <datalist id="etablissements-suggestions">
+              {etablissements.data!.map((etb) => (
+                <option key={etb} value={etb} />
+              ))}
+            </datalist>
+          )}
+        </Field>
 
         <div className="mt-2 p-4 rounded-xl bg-surface-muted border border-surface-border">
           <p className="text-xs uppercase tracking-wider text-slate-500 font-semibold mb-3">

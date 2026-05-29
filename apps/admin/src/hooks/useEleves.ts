@@ -84,6 +84,8 @@ export interface CreateElevePayload {
   telephone?: string | undefined;
   email?: string | undefined;
   photo_url?: string | undefined;
+  /** Lycée ou collège d'origine — facultatif en DB, encouragé en UI */
+  etablissement_origine?: string | undefined;
   /** Session courante pour le matricule (ex. 2025-2026) */
   session: string;
 }
@@ -131,6 +133,7 @@ export function useCreateEleve() {
         telephone: payload.telephone ?? null,
         email: payload.email ?? null,
         photo_url: payload.photo_url ?? null,
+        etablissement_origine: payload.etablissement_origine ?? null,
       };
 
       const { data: eleve, error: insertErr } = await supabase
@@ -188,6 +191,27 @@ export function useDeleteEleve() {
       if (error) throw error;
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: KEY }),
+  });
+}
+
+/** Liste des établissements d'origine déjà saisis — pour autocomplétion datalist. */
+export function useEtablissementsList() {
+  return useQuery({
+    queryKey: ['eleves', 'etablissements', 'distinct'],
+    queryFn: async (): Promise<string[]> => {
+      const { data, error } = await supabase
+        .from('eleves')
+        .select('etablissement_origine')
+        .not('etablissement_origine', 'is', null)
+        .order('etablissement_origine');
+      if (error) throw error;
+      const set = new Set<string>();
+      for (const row of data ?? []) {
+        if (row.etablissement_origine) set.add(row.etablissement_origine);
+      }
+      return Array.from(set).sort((a, b) => a.localeCompare(b, 'fr'));
+    },
+    staleTime: 5 * 60_000,
   });
 }
 

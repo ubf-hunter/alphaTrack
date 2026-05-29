@@ -167,6 +167,15 @@ export function ElevesListRoute(): JSX.Element {
                       {eleve.sexe === 'F' ? 'Féminin' : 'Masculin'} ·{' '}
                       {formatDateNaissance(eleve.date_naissance)}
                     </p>
+                    {eleve.etablissement_origine && (
+                      <p
+                        className="text-xs text-slate-500 truncate flex items-center gap-1 mt-0.5"
+                        title={eleve.etablissement_origine}
+                      >
+                        <Icon name="school" className="w-3 h-3 text-slate-400 shrink-0" />
+                        <span className="truncate">{eleve.etablissement_origine}</span>
+                      </p>
+                    )}
                   </div>
                 </div>
               </Td>

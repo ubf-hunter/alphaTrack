@@ -79,9 +79,39 @@ export function ElevesImportRoute(): JSX.Element {
 
   function downloadTemplate(): void {
     const sample = [
-      ['prenom', 'nom', 'sexe', 'date_naissance', 'telephone', 'email', 'concours_sigle', 'sous_centre_code'],
-      ['Jean', 'Mbarga', 'M', '2007-03-15', '+237600000001', '', 'ENSPY', 'DSC-FOR'],
-      ['Marie', 'Nkomo', 'F', '2008-01-22', '+237600000002', 'marie@example.cm', 'FMSB', 'YDE-ODZ'],
+      [
+        'prenom',
+        'nom',
+        'sexe',
+        'date_naissance',
+        'telephone',
+        'email',
+        'etablissement_origine',
+        'concours_sigle',
+        'sous_centre_code',
+      ],
+      [
+        'Jean',
+        'Mbarga',
+        'M',
+        '2007-03-15',
+        '+237600000001',
+        '',
+        'Lycée Général Leclerc Yaoundé',
+        'ENSPY',
+        'DSC-FOR',
+      ],
+      [
+        'Marie',
+        'Nkomo',
+        'F',
+        '2008-01-22',
+        '+237600000002',
+        'marie@example.cm',
+        'Collège de la Retraite Yaoundé',
+        'FMSB',
+        'YDE-ODZ',
+      ],
     ];
     const csv = sample.map((r) => r.join(',')).join('\n');
     downloadFile(`﻿${csv}\n`, 'modele-import-eleves.csv');
@@ -97,6 +127,7 @@ export function ElevesImportRoute(): JSX.Element {
         { key: 'nom', header: 'Nom' },
         { key: 'code_acces_clair', header: "Code d'accès" },
         { key: 'telephone', header: 'Téléphone' },
+        { key: 'etablissement_origine', header: "Établissement d'origine" },
         { key: 'concours_sigle', header: 'Concours' },
         { key: 'sous_centre_code', header: 'Sous-centre' },
       ],
@@ -237,13 +268,14 @@ function Dropzone({ onDrop, onDragOver, onInputChange, parseError }: DropzonePro
           <div className="text-sm text-slate-300">
             <p className="font-semibold text-white mb-1">Format attendu</p>
             <p className="leading-relaxed">
-              Colonnes (dans cet ordre, en-tête en première ligne) :{' '}
+              Colonnes (en-tête en première ligne) :{' '}
               <span className="font-mono text-lime-300">
                 prenom, nom, sexe (M/F), date_naissance (YYYY-MM-DD), telephone, email,
-                concours_sigle, sous_centre_code
+                etablissement_origine, concours_sigle, sous_centre_code
               </span>
               . Les variantes <span className="font-mono">prénom</span>,{' '}
-              <span className="font-mono">téléphone</span>, et séparateurs{' '}
+              <span className="font-mono">téléphone</span>,{' '}
+              <span className="font-mono">lycee</span>, et séparateurs{' '}
               <span className="font-mono">;</span> sont acceptés. Si tu renseignes
               concours_sigle, sous_centre_code doit suivre (et inversement).
             </p>
@@ -347,6 +379,9 @@ function Preview({
                 Naissance
               </th>
               <th className="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+                Établissement
+              </th>
+              <th className="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-slate-500">
                 Inscription
               </th>
               <th className="px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-wider text-slate-500">
@@ -388,6 +423,11 @@ function Preview({
                 </td>
                 <td className="px-3 py-2.5 text-xs font-mono text-slate-600">
                   {row.raw['date_naissance']}
+                </td>
+                <td className="px-3 py-2.5 text-xs text-slate-600 max-w-[200px] truncate">
+                  {row.raw['etablissement_origine'] || (
+                    <span className="text-slate-300">—</span>
+                  )}
                 </td>
                 <td className="px-3 py-2.5">
                   {row.raw['concours_sigle'] || row.raw['sous_centre_code'] ? (
@@ -513,6 +553,9 @@ function ImportDone({ summary, onDownloadCodes, onRestart }: ImportDoneProps): J
                   Code
                 </th>
                 <th className="px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+                  Établissement
+                </th>
+                <th className="px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-wider text-slate-500">
                   Inscription
                 </th>
               </tr>
@@ -528,6 +571,9 @@ function ImportDone({ summary, onDownloadCodes, onRestart }: ImportDoneProps): J
                   </td>
                   <td className="px-3 py-2 font-mono font-bold text-slate-900 tabular tracking-wider">
                     {row.code_acces_clair}
+                  </td>
+                  <td className="px-3 py-2 text-xs text-slate-600 max-w-[200px] truncate">
+                    {row.etablissement_origine ?? <span className="text-slate-300">—</span>}
                   </td>
                   <td className="px-3 py-2 text-xs text-slate-500 font-mono">
                     {row.concours_sigle ? `${row.concours_sigle} @ ${row.sous_centre_code}` : '—'}

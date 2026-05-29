@@ -182,6 +182,7 @@ export type Database = {
           created_at: string
           date_naissance: string
           email: string | null
+          etablissement_origine: string | null
           id: string
           matricule: string
           nom: string
@@ -197,6 +198,7 @@ export type Database = {
           created_at?: string
           date_naissance: string
           email?: string | null
+          etablissement_origine?: string | null
           id?: string
           matricule: string
           nom: string
@@ -212,6 +214,7 @@ export type Database = {
           created_at?: string
           date_naissance?: string
           email?: string | null
+          etablissement_origine?: string | null
           id?: string
           matricule?: string
           nom?: string
