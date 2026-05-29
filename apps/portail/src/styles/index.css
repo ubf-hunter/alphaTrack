@@ -1,2 +1,5 @@
 @import 'tailwindcss';
 @import '@alphatrack/ui/styles.css';
+
+/* Scan le package UI partagé pour ses classes Tailwind */
+@source "../../../packages/ui/src/**/*.{ts,tsx}";

@@ -1,16 +1,111 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { AuthProvider } from './lib/auth-context';
+import { readEnv } from './lib/env';
+import {
+  RedirectIfAuthenticated,
+  RequireAuth,
+  RequirePasswordChanged,
+} from './routes/guards';
+import { LoginRoute } from './routes/login';
+import { AdminLayout } from './routes/layout';
+import { DashboardRoute } from './routes/dashboard';
+import { ChangePasswordRoute } from './routes/change-password';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 30_000,
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
+
 export function App(): JSX.Element {
+  const envCheck = readEnv();
+  if (!envCheck.ok) {
+    return <ConfigError missing={envCheck.missing} />;
+  }
   return (
-    <main className="min-h-screen flex items-center justify-center px-6">
-      <div className="max-w-xl text-center space-y-4">
-        <p className="text-xs uppercase tracking-[0.2em] text-ink-400">
-          Alpha Center · Back-office
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <AuthProvider>
+          <Routes>
+            <Route
+              path="/login"
+              element={
+                <RedirectIfAuthenticated>
+                  <LoginRoute />
+                </RedirectIfAuthenticated>
+              }
+            />
+            <Route
+              path="/changer-mot-de-passe"
+              element={
+                <RequireAuth>
+                  <ChangePasswordRoute />
+                </RequireAuth>
+              }
+            />
+            <Route
+              element={
+                <RequireAuth>
+                  <RequirePasswordChanged>
+                    <AdminLayout />
+                  </RequirePasswordChanged>
+                </RequireAuth>
+              }
+            >
+              <Route index element={<DashboardRoute />} />
+              <Route path="evaluations" element={<PlaceholderRoute title="Évaluations" />} />
+              <Route path="eleves" element={<PlaceholderRoute title="Élèves" />} />
+              <Route path="referentiel" element={<PlaceholderRoute title="Référentiel" />} />
+            </Route>
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </AuthProvider>
+      </BrowserRouter>
+    </QueryClientProvider>
+  );
+}
+
+function PlaceholderRoute({ title }: { title: string }): JSX.Element {
+  return (
+    <div className="max-w-4xl">
+      <p className="text-xs uppercase tracking-[0.18em] text-ink-400 mb-2">{title}</p>
+      <h1 className="display text-3xl text-ink-800 mb-3">À venir</h1>
+      <p className="text-ink-500">
+        Module en construction. Sera livré dans la prochaine itération de la Phase 1.
+      </p>
+    </div>
+  );
+}
+
+function ConfigError({ missing }: { missing: ReadonlyArray<string> }): JSX.Element {
+  return (
+    <main className="min-h-screen flex items-center justify-center bg-paper-base p-6">
+      <div className="max-w-lg w-full">
+        <p className="text-xs uppercase tracking-[0.2em] text-rouge-brique mb-2">
+          Configuration manquante
         </p>
-        <h1 className="display text-5xl text-ink-700">alphaTrack</h1>
-        <p className="text-ink-500 leading-relaxed">
-          Espace d&apos;administration. Phase 0 — fondations.
+        <h1 className="display text-3xl text-ink-800 mb-3">
+          Variables d&apos;environnement absentes
+        </h1>
+        <p className="text-sm text-ink-500 leading-relaxed mb-4">
+          Le client Supabase n&apos;a pas pu être initialisé. Les variables suivantes sont
+          requises dans le fichier <code className="font-mono text-ink-700">.env</code> à la
+          racine du monorepo :
         </p>
-        <p className="text-xs text-ink-300 font-mono">
-          v0.1.0 — fondations Supabase + design system
+        <ul className="font-mono text-sm text-rouge-brique bg-rouge-brique/5 border border-rouge-brique/20 rounded-md px-4 py-3 mb-6">
+          {missing.map((m) => (
+            <li key={m}>· {m}</li>
+          ))}
+        </ul>
+        <p className="text-sm text-ink-500 leading-relaxed">
+          Après avoir corrigé le <code className="font-mono">.env</code>, arrête et relance{' '}
+          <code className="font-mono">pnpm dev:admin</code> (Vite ne recharge pas les
+          variables d&apos;env à chaud).
         </p>
       </div>
     </main>
