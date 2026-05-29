@@ -11,6 +11,11 @@ import { LoginRoute } from './routes/login';
 import { AdminLayout } from './routes/layout';
 import { DashboardRoute } from './routes/dashboard';
 import { ChangePasswordRoute } from './routes/change-password';
+import { ReferentielLayout } from './routes/referentiel/layout';
+import { ConcoursRoute } from './routes/referentiel/concours';
+import { MatieresRoute } from './routes/referentiel/matieres';
+import { CoefficientsRoute } from './routes/referentiel/coefficients';
+import { SousCentresRoute } from './routes/referentiel/sous-centres';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -60,7 +65,13 @@ export function App(): JSX.Element {
               <Route index element={<DashboardRoute />} />
               <Route path="evaluations" element={<PlaceholderRoute title="Évaluations" />} />
               <Route path="eleves" element={<PlaceholderRoute title="Élèves" />} />
-              <Route path="referentiel" element={<PlaceholderRoute title="Référentiel" />} />
+              <Route path="referentiel" element={<ReferentielLayout />}>
+                <Route index element={<Navigate to="concours" replace />} />
+                <Route path="concours" element={<ConcoursRoute />} />
+                <Route path="matieres" element={<MatieresRoute />} />
+                <Route path="coefficients" element={<CoefficientsRoute />} />
+                <Route path="sous-centres" element={<SousCentresRoute />} />
+              </Route>
             </Route>
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
