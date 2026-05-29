@@ -17,6 +17,7 @@ import { MatieresRoute } from './routes/referentiel/matieres';
 import { CoefficientsRoute } from './routes/referentiel/coefficients';
 import { SousCentresRoute } from './routes/referentiel/sous-centres';
 import { ElevesListRoute } from './routes/eleves/list';
+import { ElevesImportRoute } from './routes/eleves/import';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -66,6 +67,7 @@ export function App(): JSX.Element {
               <Route index element={<DashboardRoute />} />
               <Route path="evaluations" element={<PlaceholderRoute title="Évaluations" />} />
               <Route path="eleves" element={<ElevesListRoute />} />
+              <Route path="eleves/import" element={<ElevesImportRoute />} />
               <Route path="referentiel" element={<ReferentielLayout />}>
                 <Route index element={<Navigate to="concours" replace />} />
                 <Route path="concours" element={<ConcoursRoute />} />

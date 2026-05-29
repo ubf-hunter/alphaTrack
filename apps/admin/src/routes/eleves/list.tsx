@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Avatar,
   Button,
@@ -76,9 +77,18 @@ export function ElevesListRoute(): JSX.Element {
             Le matricule et le code d&apos;accès sont générés automatiquement à la création.
           </p>
         </div>
-        <Button leftIcon={<Icon name="plus" />} onClick={() => setCreating(true)}>
-          Nouvel élève
-        </Button>
+        <div className="flex items-center gap-2">
+          <Link
+            to="/eleves/import"
+            className="inline-flex items-center justify-center gap-2 h-10 px-4 text-sm rounded-lg font-semibold bg-surface-base text-slate-700 border border-surface-border hover:bg-surface-muted hover:border-slate-300 transition-colors"
+          >
+            <Icon name="book" />
+            Importer CSV
+          </Link>
+          <Button leftIcon={<Icon name="plus" />} onClick={() => setCreating(true)}>
+            Nouvel élève
+          </Button>
+        </div>
       </header>
 
       {/* Toolbar : search + filtres */}
