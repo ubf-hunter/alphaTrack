@@ -22,12 +22,14 @@ import { useSousCentresList } from '../../hooks/useSousCentres';
 import { useDeleteEleve } from '../../hooks/useEleves';
 import { CreateEleveModal } from './create-modal';
 import { ConfirmDeleteModal } from './confirm-delete';
+import { EditEleveModal } from './edit-modal';
 
 export function ElevesListRoute(): JSX.Element {
   const [search, setSearch] = useState('');
   const [sousCentreId, setSousCentreId] = useState<string>('');
   const [concoursId, setConcoursId] = useState<string>('');
   const [creating, setCreating] = useState(false);
+  const [editing, setEditing] = useState<EleveListItem | null>(null);
   const [toDelete, setToDelete] = useState<EleveListItem | null>(null);
 
   const concours = useConcoursList();
@@ -194,7 +196,7 @@ export function ElevesListRoute(): JSX.Element {
               </Td>
               <Td>
                 <div className="flex items-center justify-end gap-1">
-                  <IconButton label="Modifier" onClick={() => undefined}>
+                  <IconButton label="Modifier" onClick={() => setEditing(eleve)}>
                     <Icon name="pencil" />
                   </IconButton>
                   <IconButton
@@ -212,6 +214,14 @@ export function ElevesListRoute(): JSX.Element {
       </Table>
 
       <CreateEleveModal open={creating} onClose={() => setCreating(false)} />
+
+      {editing && (
+        <EditEleveModal
+          open={!!editing}
+          onClose={() => setEditing(null)}
+          eleve={editing}
+        />
+      )}
 
       {toDelete && (
         <ConfirmDeleteModal
