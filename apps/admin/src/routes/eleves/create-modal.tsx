@@ -17,6 +17,7 @@ import { useCreateEleve, type CreateEleveResult } from '../../hooks/useEleves';
 import { useCreateInscription } from '../../hooks/useInscriptions';
 import { useConcoursList } from '../../hooks/useConcours';
 import { useSousCentresList } from '../../hooks/useSousCentres';
+import { ShareCodeBlock } from './share-code-block';
 
 const formSchema = z.object({
   nom: z.string().min(1, 'Nom requis').max(80),
@@ -145,48 +146,28 @@ export function CreateEleveModal({ open, onClose }: Props): JSX.Element {
         onOpenChange={(o) => !o && handleClose()}
         title="Élève créé ✓"
         description="Note bien le code d'accès — il ne sera plus jamais affiché."
-        size="md"
-        footer={
-          <>
-            <Button variant="ghost" onClick={() => copyCode(created)}>
-              <Icon name="check" />
-              Copier
-            </Button>
-            <Button onClick={handleClose}>Terminé</Button>
-          </>
-        }
+        size="lg"
+        footer={<Button onClick={handleClose}>Terminé</Button>}
       >
         <div className="flex flex-col gap-4">
           <div className="p-4 rounded-2xl bg-success/10 border border-success/20">
-            <p className="text-sm text-slate-700 mb-3">
+            <p className="text-sm text-slate-700 mb-4">
               <strong>{created.eleve.prenom} {created.eleve.nom}</strong> a été créé(e) avec succès.
             </p>
-            <dl className="grid grid-cols-2 gap-3 text-sm">
-              <div>
-                <dt className="text-xs uppercase tracking-wider text-slate-500 font-semibold mb-1">
-                  Matricule
-                </dt>
-                <dd className="font-mono font-bold text-slate-900 text-base">
-                  {created.eleve.matricule}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-xs uppercase tracking-wider text-slate-500 font-semibold mb-1">
-                  Code d&apos;accès
-                </dt>
-                <dd className="font-mono font-bold text-slate-900 text-base">
-                  {created.code_acces_clair}
-                </dd>
-              </div>
-            </dl>
+            <ShareCodeBlock
+              matricule={created.eleve.matricule}
+              prenom={created.eleve.prenom}
+              nom={created.eleve.nom}
+              code={created.code_acces_clair}
+              telephone={created.eleve.telephone}
+            />
           </div>
 
           <div className="p-3 rounded-xl bg-warning/10 border border-warning/30 flex items-start gap-2 text-sm">
             <Icon name="lock" className="text-warning shrink-0 mt-0.5" />
             <p className="text-warning leading-relaxed">
-              Ce code permettra à l&apos;élève de se connecter au portail. Il est stocké en
-              version hachée (bcrypt) et ne pourra plus être affiché. Communique-le par un
-              canal sûr.
+              Le code est stocké en version hachée (bcrypt) — il ne pourra plus être affiché
+              après fermeture. Communique-le par un canal sûr maintenant.
             </p>
           </div>
         </div>
@@ -356,9 +337,3 @@ function SexeRadio({
   );
 }
 
-function copyCode(result: CreateEleveResult): void {
-  const text = `Matricule: ${result.eleve.matricule}\nCode: ${result.code_acces_clair}`;
-  if (typeof navigator !== 'undefined' && navigator.clipboard) {
-    void navigator.clipboard.writeText(text);
-  }
-}

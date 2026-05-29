@@ -13,6 +13,7 @@ import {
 } from '@alphatrack/ui';
 import { useUpdateEleve, useResetEleveCode, type EleveListItem } from '../../hooks/useEleves';
 import { InscriptionsSection } from './inscriptions-section';
+import { ShareCodeBlock } from './share-code-block';
 
 const editSchema = z.object({
   nom: z.string().min(1, 'Nom requis').max(80),
@@ -255,7 +256,7 @@ export function EditEleveModal({ open, onClose, eleve }: Props): JSX.Element {
 
         {newCode ? (
           <div className="p-4 rounded-2xl bg-success/10 border border-success/30">
-            <div className="flex items-start gap-3">
+            <div className="flex items-start gap-3 mb-4">
               <span className="w-9 h-9 rounded-xl bg-success/20 text-success flex items-center justify-center shrink-0">
                 <Icon name="circle-check" />
               </span>
@@ -263,29 +264,19 @@ export function EditEleveModal({ open, onClose, eleve }: Props): JSX.Element {
                 <p className="font-semibold text-slate-900 mb-1">
                   Nouveau code d&apos;accès généré
                 </p>
-                <p className="text-sm text-slate-600 mb-3">
-                  L&apos;ancien code ne fonctionne plus. Communique le nouveau à l&apos;élève par
-                  un canal sûr — il ne sera plus jamais affiché.
+                <p className="text-sm text-slate-600">
+                  L&apos;ancien code ne fonctionne plus. Communique le nouveau par un canal
+                  sûr — il ne sera plus jamais affiché après fermeture.
                 </p>
-                <div className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-surface-base border border-surface-border">
-                  <span className="font-mono font-bold text-xl text-slate-900 tabular tracking-wider">
-                    {newCode}
-                  </span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      if (typeof navigator !== 'undefined' && navigator.clipboard) {
-                        void navigator.clipboard.writeText(newCode);
-                      }
-                    }}
-                  >
-                    <Icon name="check" />
-                    Copier
-                  </Button>
-                </div>
               </div>
             </div>
+            <ShareCodeBlock
+              matricule={eleve.matricule}
+              prenom={eleve.prenom}
+              nom={eleve.nom}
+              code={newCode}
+              telephone={eleve.telephone}
+            />
           </div>
         ) : confirmReset ? (
           <div className="p-4 rounded-2xl bg-warning/10 border border-warning/30">
