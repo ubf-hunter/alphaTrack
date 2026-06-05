@@ -1,6 +1,7 @@
 import { Card, KpiCard, Pill } from '@alphatrack/ui';
 import { useAuth } from '../lib/auth-context';
 import { useDashboardStats } from '../hooks/useDashboardStats';
+import { evalStatutLabel, evalStatutTone } from '../lib/evaluation-statut';
 
 export function DashboardRoute(): JSX.Element {
   const { admin } = useAuth();
@@ -106,44 +107,14 @@ export function DashboardRoute(): JSX.Element {
             <p className="text-sm text-slate-300 leading-relaxed max-w-2xl">
               Le token JWT est en place, le client Supabase l&apos;injecte
               automatiquement dans les appels. Les statistiques ci-dessus viennent de
-              ton instance Cloud en temps réel. Prochaine étape : modules CRUD du
-              référentiel (concours, matières, sous-centres).
+              ton instance Cloud en temps réel. Prochaine étape : saisie des notes,
+              calcul des rangs et publication des évaluations.
             </p>
           </div>
         </div>
       </Card>
     </div>
   );
-}
-
-function evalStatutLabel(statut: string): string {
-  return (
-    {
-      brouillon: 'Brouillon',
-      composition: 'En composition',
-      saisie: 'Saisie en cours',
-      calcule: 'Calculée',
-      publie: 'Publiée',
-      archive: 'Archivée',
-    }[statut] ?? statut
-  );
-}
-
-function evalStatutTone(
-  statut: string,
-): 'neutral' | 'lime' | 'success' | 'warning' | 'info' | 'danger' | 'dark' {
-  switch (statut) {
-    case 'publie':
-      return 'success';
-    case 'calcule':
-      return 'info';
-    case 'saisie':
-      return 'warning';
-    case 'archive':
-      return 'neutral';
-    default:
-      return 'dark';
-  }
 }
 
 const iconUsers = (

@@ -18,6 +18,10 @@ import { CoefficientsRoute } from './routes/referentiel/coefficients';
 import { SousCentresRoute } from './routes/referentiel/sous-centres';
 import { ElevesListRoute } from './routes/eleves/list';
 import { ElevesImportRoute } from './routes/eleves/import';
+import { EvaluationsListRoute } from './routes/evaluations/list';
+import { EvaluationDetailRoute } from './routes/evaluations/detail';
+import { EvaluationSaisieRoute } from './routes/evaluations/saisie';
+import { EvaluationResultatsRoute } from './routes/evaluations/resultats';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -65,7 +69,10 @@ export function App(): JSX.Element {
               }
             >
               <Route index element={<DashboardRoute />} />
-              <Route path="evaluations" element={<PlaceholderRoute title="Évaluations" />} />
+              <Route path="evaluations" element={<EvaluationsListRoute />} />
+              <Route path="evaluations/:id" element={<EvaluationDetailRoute />} />
+              <Route path="evaluations/:id/saisie" element={<EvaluationSaisieRoute />} />
+              <Route path="evaluations/:id/resultats" element={<EvaluationResultatsRoute />} />
               <Route path="eleves" element={<ElevesListRoute />} />
               <Route path="eleves/import" element={<ElevesImportRoute />} />
               <Route path="referentiel" element={<ReferentielLayout />}>
@@ -81,20 +88,6 @@ export function App(): JSX.Element {
         </AuthProvider>
       </BrowserRouter>
     </QueryClientProvider>
-  );
-}
-
-function PlaceholderRoute({ title }: { title: string }): JSX.Element {
-  return (
-    <div className="max-w-4xl">
-      <p className="text-xs uppercase tracking-wider text-slate-400 mb-2 font-semibold">
-        {title}
-      </p>
-      <h1 className="text-3xl font-bold tracking-tight text-slate-900 mb-3">À venir</h1>
-      <p className="text-slate-500">
-        Module en construction. Sera livré dans la prochaine itération de la Phase 1.
-      </p>
-    </div>
   );
 }
 
