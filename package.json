@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "description": "Alpha Center — Système de gestion des résultats (back-office + portail élève)",
-  "packageManager": "pnpm@11.4.0",
+  "packageManager": "pnpm@9.0.0",
   "engines": {
     "node": ">=18",
-    "pnpm": ">=10.0.0"
+    "pnpm": ">=9"
   },
   "scripts": {
     "admin": "pnpm --filter @alphatrack/admin",
