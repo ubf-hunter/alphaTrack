@@ -1,6 +1,6 @@
 {
-    "buildCommand": "pnpm --filter @alphatrack/admin build",
+    "buildCommand": "npm run build --workspace=apps/admin",
     "outputDirectory": "apps/admin/dist",
-    "installCommand": "pnpm install --no-frozen-lockfile",
+    "installCommand": "npm install --legacy-peer-deps",
     "framework": null
 }
