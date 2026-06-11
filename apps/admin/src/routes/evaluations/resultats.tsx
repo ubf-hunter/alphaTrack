@@ -106,7 +106,7 @@ export function EvaluationResultatsRoute(): JSX.Element {
           </p>
         </div>
         {resultats && resultats.length > 0 && (
-          <Button onClick={handleExport} variant="outline">
+          <Button onClick={handleExport} variant="secondary">
             Exporter en CSV
           </Button>
         )}
