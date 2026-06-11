@@ -5,7 +5,7 @@
   "description": "Alpha Center — Système de gestion des résultats (back-office + portail élève)",
   "packageManager": "pnpm@11.4.0",
   "engines": {
-    "node": ">=20.0.0",
+    "node": ">=18",
     "pnpm": ">=10.0.0"
   },
   "scripts": {

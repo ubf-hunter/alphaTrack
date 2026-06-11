@@ -166,13 +166,13 @@ importers:
 
   packages/shared:
     dependencies:
-      '@supabase/supabase-js':
-        specifier: ^2.47.0
-        version: 2.106.2
       zod:
         specifier: ^3.24.1
         version: 3.25.76
     devDependencies:
+      '@supabase/supabase-js':
+        specifier: ^2.47.0
+        version: 2.106.2
       '@types/node':
         specifier: ^22.10.0
         version: 22.19.19
