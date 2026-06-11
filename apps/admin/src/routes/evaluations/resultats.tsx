@@ -1,6 +1,5 @@
-import { useMemo, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
 import {
+  Button,
   EmptyRow,
   Field,
   LoadingRow,
@@ -14,9 +13,12 @@ import {
   Thead,
   Tr,
 } from '@alphatrack/ui';
+import { useMemo, useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import { useConcoursList } from '../../hooks/useConcours';
 import { useEvaluation } from '../../hooks/useEvaluations';
 import { useResultats } from '../../hooks/useResultats';
+import { downloadFile, objectsToCsv } from '../../lib/csv';
 
 export function EvaluationResultatsRoute(): JSX.Element {
   const { id } = useParams<{ id: string }>();
@@ -29,10 +31,10 @@ export function EvaluationResultatsRoute(): JSX.Element {
   const { data: resultats, isLoading: resLoading, error: resError } = useResultats(
     concoursId && evaluation
       ? {
-          evaluationId: evaluation.id,
-          concoursId,
-          nonClasseOnly,
-        }
+        evaluationId: evaluation.id,
+        concoursId,
+        nonClasseOnly,
+      }
       : undefined,
   );
 
@@ -63,6 +65,29 @@ export function EvaluationResultatsRoute(): JSX.Element {
   }
 
   const notReady = !['calcule', 'publie', 'archive'].includes(evaluation.statut);
+  const handleExport = () => {
+    if (!resultats || resultats.length === 0) return;
+
+    const columns = [
+      { key: 'rang_national', header: 'Rang National' },
+      { key: 'matricule', header: 'Matricule' },
+      { key: 'nom_complet', header: 'Nom Complet' },
+      { key: 'moyenne', header: 'Moyenne' },
+      { key: 'rang_sous_centre', header: 'Rang SC' },
+    ];
+
+    // On transforme les données pour qu'elles soient "plates" pour le CSV
+    const flatData = resultats.map(r => ({
+      rang_national: r.rang_national ?? '—',
+      matricule: r.eleve?.matricule ?? '—',
+      nom_complet: `${r.eleve?.nom} ${r.eleve?.prenom}`,
+      moyenne: r.moyenne?.toFixed(2) ?? '—',
+      rang_sous_centre: r.rang_sous_centre ?? '—',
+    }));
+
+    const csv = objectsToCsv(flatData, columns as any);
+    downloadFile(csv, `resultats_${evaluation?.libelle.replace(/\s+/g, '_')}.csv`);
+  };
 
   return (
     <div className="max-w-[1400px] mx-auto py-2">
@@ -73,11 +98,18 @@ export function EvaluationResultatsRoute(): JSX.Element {
         ← {evaluation.libelle}
       </Link>
 
-      <header className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-900">Classements</h1>
-        <p className="text-sm text-slate-500 mt-1">
-          Moyennes et rangs national, régional et sous-centre.
-        </p>
+      <header className="mb-6 flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">Classements</h1>
+          <p className="text-sm text-slate-500 mt-1">
+            Moyennes et rangs national, régional et sous-centre.
+          </p>
+        </div>
+        {resultats && resultats.length > 0 && (
+          <Button onClick={handleExport} variant="outline">
+            Exporter en CSV
+          </Button>
+        )}
       </header>
 
       {notReady && (
